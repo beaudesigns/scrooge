@@ -1,0 +1,32 @@
+{
+  "name": "Scrooge",
+  "version": "1.0.0",
+  "description": "Generic financial account aggregator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/beaudesigns/scrooge.git"
+  },
+  "keywords": [
+    "ofx",
+    "finance",
+    "aggregator",
+    "screen-scraper"
+  ],
+  "author": "Beau West <beau@west.gs> (http://west.gs/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/beaudesigns/scrooge/issues"
+  },
+  "homepage": "https://github.com/beaudesigns/scrooge",
+  "dependencies": {
+    "chalk": "^0.5.1",
+    "phantom": "^0.7.1",
+    "prosperity-ofx": "git://github.com/beaudesigns/prosperity-ofx",
+    "request": "^2.51.0",
+    "zombie": "^2.5.1"
+  }
+}
