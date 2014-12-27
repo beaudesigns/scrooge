@@ -26,7 +26,6 @@
     "chalk": "^0.5.1",
     "phantom": "^0.7.1",
     "prosperity-ofx": "git://github.com/beaudesigns/prosperity-ofx",
-    "request": "^2.51.0",
-    "zombie": "^2.5.1"
+    "request": "^2.51.0"
   }
 }
