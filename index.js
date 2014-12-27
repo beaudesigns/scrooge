@@ -1,14 +1,19 @@
 var crypto = require('crypto'),
 	chalk = require('chalk');
 
-if (process.argv.length < 5) {
+if (process.argv.length < 6) {
 	throw new Error('Missing parameters.');
 }
 
 /**
  * @param {String} encryptionPassword Password used to encrypt data.
  */
-var encryptionPassword = process.argv[2];
+var encryptionKey = process.argv[2];
+
+/**
+ * @param {String} encryptionPassword Password used to encrypt data.
+ */
+var encryptionIV = process.argv[3];
 
 /**
  * @param {Object} bankObject Bank information object
@@ -18,14 +23,14 @@ var encryptionPassword = process.argv[2];
  * @param {Number[]} bankObject.transactionsFor Partial bank account numbers to pull
  * @param {Number} bankObject.days Days to pull transactions for.
  */
-var bankObject = JSON.parse(decrypt(process.argv[3], encryptionPassword));
+var bankObject = JSON.parse(decrypt(process.argv[4], encryptionKey, encryptionIV));
 
 /**
  * @param {Object} exportObject Bank information object
  * @param {String} exportObject.name exports/export_name. Does not include .js
  * @param {String} exportObject.key API Key to push transactions
  */
-var exportObject = JSON.parse(decrypt(process.argv[4], encryptionPassword));
+var exportObject = JSON.parse(decrypt(process.argv[5], encryptionKey, encryptionIV));
 
 console.log(chalk.red('Scrooge is beginning his efforts.'));
 var bank = require('./banks/' + bankObject.bank + '.js');
@@ -46,14 +51,14 @@ bank.run({
 });
 
 // Encrypt/Decrypt
-function encrypt(text, password) {
-	var cipher = crypto.createCipher('aes-256-ctr', password);
+function encrypt(text, key, iv) {
+	var cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
 	var crypted = cipher.update(text, 'utf8', 'hex');
 	crypted += cipher.final('hex');
 	return crypted;
 }
-function decrypt(text, password) {
-	var decipher = crypto.createDecipher('aes-256-ctr', password);
+function decrypt(text, key, iv) {
+	var decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
 	var dec = decipher.update(text, 'hex', 'utf8');
 	dec += decipher.final('utf8');
 	return dec;
