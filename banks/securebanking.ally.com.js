@@ -222,14 +222,7 @@ var pages = {
 												waitFor(page, function () {
 													return (document.title.indexOf('Register Device') === -1);
 												}, function (error) {
-
-													// TODO: This is debug code.
-													page.render('ally.png');
-													var fs = require('fs');
-													page.getContent(function (content) {
-														fs.writeFileSync('ally.html', content);
-														callback(error);
-													})
+													callback(error);
 												});
 											});
 										});
