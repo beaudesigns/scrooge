@@ -186,20 +186,38 @@ var pages = {
 					}, function () {
 						log('Sending security code to: ' + methods[result.choice - 1]);
 
-						// TODO: This is debug code.
-						setTimeout(function () {
-							page.render('ally.png');
-							var fs = require('fs');
-							page.getContent(function (content) {
-								fs.writeFileSync('ally.html', content);
-							})
-						}, 5000);
+						waitFor(page, function () {
+							return (document.title.indexOf('Enter Security Code') !== -1);
+						}, function () {
+							prompt.start();
+							prompt.get({
+								properties: {
+									code: {
+										type: 'number',
+										description: 'Enter your security code'
+									}
+								}
+							}, function (error, result) {
+								page.evaluate(function () {
+									document.querySelector('input#enterSecurityCode').focus();
+								}, function () {
+									page.sendEvent('keypress', result.code);
 
+									page.evaluate(function () {
+										document.querySelector('button#continueButton').click();
+									}, function () {
 
+										waitFor(page, function () {
+											return (document.title.indexOf('Enter Security Code') === -1);
+										}, function (error) {
+											callback(error);
+										});
+									});
+								});
+							});
+						});
 					}, result.choice)
 				});
-
-				// When a method is chosen, click it and then click the button.
 			});
 		});
 	},
