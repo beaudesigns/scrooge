@@ -39,7 +39,7 @@ exports.run = function (options, callback) {
 function screenScrapePages(callback) {
 	var results = {};
 
-	phantom.create({parameters: {'ssl-protocol': 'any'}}, function (ph) {
+	phantom.create({parameters: {'ssl-protocol': 'any', 'cookies-file': 'cookies.txt'}}, function (ph) {
 		ph.createPage(function (page) {
 			page.onResourceError = function (resourceError) {
 				page.resource_error = resourceError;
@@ -222,7 +222,7 @@ var pages = {
 												document.querySelector('input#trusted').click();
 												document.querySelector('button#continueRegDevice').click();
 											}, function () {
-												console.log('Registering device');
+												log('Registering device');
 
 												waitFor(page, function () {
 													return (document.title.indexOf('Register Device') === -1);
