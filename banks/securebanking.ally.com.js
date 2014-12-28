@@ -194,7 +194,7 @@ var pages = {
 							prompt.get({
 								properties: {
 									code: {
-										type: 'number',
+										type: 'string',
 										description: 'Enter your security code'
 									}
 								}
