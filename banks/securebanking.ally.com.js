@@ -198,13 +198,16 @@ var pages = {
 									}
 								}
 							}, function (error, result) {
+
 								page.evaluate(function () {
 									document.querySelector('input#enterSecurityCode').focus();
 								}, function () {
 									page.sendEvent('keypress', result.code);
 
 									page.evaluate(function () {
-										document.querySelector('button#continueButton').click();
+										window.setTimeout(function () {
+											document.querySelector('button#continueButton').click();
+										}, 100);
 									}, function () {
 
 										waitFor(page, function () {
