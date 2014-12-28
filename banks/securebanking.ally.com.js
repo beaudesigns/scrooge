@@ -41,15 +41,13 @@ function screenScrapePages(callback) {
 	phantom.create(function (ph) {
 		ph.createPage(function (page) {
 			page.onResourceError = function (resourceError) {
-				page.reason = resourceError.errorString;
-				page.reason_url = resourceError.url;
+				page.resource_error = resourceError;
 			};
 
 			page.open(exports.configuration.site, function (status) {
 				if (status !== 'success') {
-					console.log("Error opening url \"" + page.reason_url + "\": " + page.reason);
 					ph.exit(1);
-					callback(true, results);
+					callback(new Error(page.resource_error), results);
 				} else {
 
 					log('Opened ' + exports.configuration.site + ': ' + status);
