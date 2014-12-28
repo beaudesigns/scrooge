@@ -40,50 +40,62 @@ function screenScrapePages(callback) {
 
 	phantom.create(function (ph) {
 		ph.createPage(function (page) {
+			page.onResourceError = function (resourceError) {
+				page.reason = resourceError.errorString;
+				page.reason_url = resourceError.url;
+			};
+
 			page.open(exports.configuration.site, function (status) {
-				log('Opened ' + exports.configuration.site + ': ' + status);
+				if (status !== 'success') {
+					console.log("Error opening url \"" + page.reason_url + "\": " + page.reason);
+					ph.exit(1);
+					callback(true, results);
+				} else {
 
-				pages.login(page, function (error) {
-					if (error) {
-						return callback(error, results);
-					}
-					pages.accounts(page, function (accounts) {
-						results.accounts = accounts;
+					log('Opened ' + exports.configuration.site + ': ' + status);
 
-						var tempAccountList = accounts.slice(0);
-						pullTransactions();
-						function pullTransactions() {
-							if (tempAccountList.length > 0) {
-								var account = tempAccountList.shift();
-								var needToPull = false;
-
-								settings.transactionsFor.forEach(function (settingsAccount) {
-									if (account.number.indexOf(settingsAccount) !== -1) {
-										needToPull = true;
-									}
-								});
-
-								if (needToPull) {
-									pages.transactions(page, account, function (ofxObject) {
-										// Place it on the right account
-										for (var i = 0; i < results.accounts.length; ++i) {
-											if (results.accounts[i].id === account.id) {
-												results.accounts[i].transactions = transit.findObjectKey('STMTTRN', ofxObject);
-												break;
-											}
-										}
-										pullTransactions();
-									});
-								} else {
-									pullTransactions();
-								}
-							} else {
-								ph.exit();
-								callback(null, results);
-							}
+					pages.login(page, function (error) {
+						if (error) {
+							return callback(error, results);
 						}
+						pages.accounts(page, function (accounts) {
+							results.accounts = accounts;
+
+							var tempAccountList = accounts.slice(0);
+							pullTransactions();
+							function pullTransactions() {
+								if (tempAccountList.length > 0) {
+									var account = tempAccountList.shift();
+									var needToPull = false;
+
+									settings.transactionsFor.forEach(function (settingsAccount) {
+										if (account.number.indexOf(settingsAccount) !== -1) {
+											needToPull = true;
+										}
+									});
+
+									if (needToPull) {
+										pages.transactions(page, account, function (ofxObject) {
+											// Place it on the right account
+											for (var i = 0; i < results.accounts.length; ++i) {
+												if (results.accounts[i].id === account.id) {
+													results.accounts[i].transactions = transit.findObjectKey('STMTTRN', ofxObject);
+													break;
+												}
+											}
+											pullTransactions();
+										});
+									} else {
+										pullTransactions();
+									}
+								} else {
+									ph.exit();
+									callback(null, results);
+								}
+							}
+						});
 					});
-				});
+				}
 			});
 		});
 	});
