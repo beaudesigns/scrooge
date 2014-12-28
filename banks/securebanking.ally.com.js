@@ -129,6 +129,7 @@ var pages = {
 					}, function () {
 
 						// Done logging in
+						log('Login form submitted.');
 						waitFor(page, function () {
 							return (document.title.indexOf('Login') === -1);
 						}, function (error) {
