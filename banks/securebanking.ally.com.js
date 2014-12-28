@@ -38,7 +38,7 @@ exports.run = function (options, callback) {
 function screenScrapePages(callback) {
 	var results = {};
 
-	phantom.create(function (ph) {
+	phantom.create({parameters: {'ssl-protocol': 'any'}}, function (ph) {
 		ph.createPage(function (page) {
 			page.onResourceError = function (resourceError) {
 				page.resource_error = resourceError;
