@@ -212,18 +212,26 @@ var pages = {
 									}, function () {
 
 										waitFor(page, function () {
-											return (document.title.indexOf('Enter Security Code') === -1);
-										}, function (error) {
+											return (document.title.indexOf('Register Device') !== -1);
+										}, function () {
+											page.evaluate(function () {
+												document.querySelector('input#trusted').click();
+												document.querySelector('button#continueRegDevice').click();
+											}, function () {
 
+												waitFor(page, function () {
+													return (document.title.indexOf('Register Device') === -1);
+												}, function (error) {
 
-											// TODO: This is debug code.
-											page.render('ally.png');
-											var fs = require('fs');
-											page.getContent(function (content) {
-												fs.writeFileSync('ally.html', content);
-												callback(error);
-											})
-
+													// TODO: This is debug code.
+													page.render('ally.png');
+													var fs = require('fs');
+													page.getContent(function (content) {
+														fs.writeFileSync('ally.html', content);
+														callback(error);
+													})
+												});
+											});
 										});
 									});
 								});
