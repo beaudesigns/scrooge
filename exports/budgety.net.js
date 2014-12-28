@@ -46,7 +46,7 @@ function importTransactions(transactions, callback) {
 		var transaction = transactions.shift();
 
 		// Check if the transaction exists in Budgety.
-		request('http://budgety.dev/api/transactions/exists?key=' + encodeURIComponent(settings.apiKey) + '&id=' + encodeURIComponent(transaction.id) + '&hash=' + encodeURIComponent(transaction.hash), function (error, response, body) {
+		request('http://budgety.net/api/transactions/exists?key=' + encodeURIComponent(settings.apiKey) + '&id=' + encodeURIComponent(transaction.id) + '&hash=' + encodeURIComponent(transaction.hash), function (error, response, body) {
 			body = JSON.parse(body);
 			if (body.exists) {
 				log(chalk.gray('exists'), transaction.amount, '\t', transaction.payee);
@@ -58,7 +58,7 @@ function importTransactions(transactions, callback) {
 
 					// Import into Budgety.
 					log(chalk.cyan('import'), geoTransaction.amount, '\t', geoTransaction.payee);
-					request.post('http://budgety.dev/api/transactions/import?key=' + encodeURIComponent(settings.apiKey), {form: {transaction: geoTransaction}}, function (error, response, body) {
+					request.post('http://budgety.net/api/transactions/import?key=' + encodeURIComponent(settings.apiKey), {form: {transaction: geoTransaction}}, function (error, response, body) {
 						importTransactions(transactions, callback);
 					});
 				});
