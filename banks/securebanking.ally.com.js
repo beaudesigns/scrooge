@@ -342,8 +342,7 @@ function waitFor(page, evaluation, callback, expiresAt) {
 				callback();
 			}, 100);
 		} else {
-			var finish = Date.now();
-			if (finish > expiresAt) {
+			if (Date.now() > expiresAt) {
 				callback(new Error('waitFor() timed out.'));
 				return;
 			}
