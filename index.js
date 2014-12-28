@@ -41,7 +41,7 @@ bank.run({
 	days: bankObject.days
 }, function (error, bankDetail) {
 	if (error) {
-		console.error(error);
+		throw error;
 	} else {
 		var exporter = require('./exports/' + exportObject.name + '.js');
 		exporter.run({apiKey: exportObject.key, accounts: bankDetail.accounts}, function () {
