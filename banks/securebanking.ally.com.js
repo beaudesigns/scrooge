@@ -210,7 +210,16 @@ var pages = {
 										waitFor(page, function () {
 											return (document.title.indexOf('Enter Security Code') === -1);
 										}, function (error) {
-											callback(error);
+
+
+											// TODO: This is debug code.
+											page.render('ally.png');
+											var fs = require('fs');
+											page.getContent(function (content) {
+												fs.writeFileSync('ally.html', content);
+												callback(error);
+											})
+
 										});
 									});
 								});
