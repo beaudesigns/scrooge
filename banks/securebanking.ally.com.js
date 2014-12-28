@@ -136,7 +136,7 @@ var pages = {
 							page.evaluate(function () {
 								return document.title;
 							}, function (title) {
-								if (title.indexOf() !== -1) {
+								if (title.indexOf('Verify Identity') !== -1) {
 									pages.verifyAccount(page, callback);
 								} else {
 									callback(error);
