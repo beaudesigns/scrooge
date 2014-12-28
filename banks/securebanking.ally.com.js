@@ -113,6 +113,7 @@ var pages = {
 				document.querySelector('input#username').focus();
 				return true;
 			}, function () {
+				log('Entering username');
 				page.sendEvent('keypress', settings.username);
 
 				// Enter the password
@@ -120,6 +121,7 @@ var pages = {
 					document.querySelector('input#password').focus();
 					return true;
 				}, function () {
+					log('Entering password');
 					page.sendEvent('keypress', settings.password);
 
 					// Log in
@@ -220,6 +222,7 @@ var pages = {
 												document.querySelector('input#trusted').click();
 												document.querySelector('button#continueRegDevice').click();
 											}, function () {
+												console.log('Registering device');
 
 												waitFor(page, function () {
 													return (document.title.indexOf('Register Device') === -1);
