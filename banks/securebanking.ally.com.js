@@ -322,6 +322,7 @@ var pages = {
 			ofx.parse(ofxData, function (error, response) {
 				if (error) {
 					log(error);
+					console.log('OFX Data:\n' + ofxData + '\n\n');
 				}
 				callback(response);
 			});
