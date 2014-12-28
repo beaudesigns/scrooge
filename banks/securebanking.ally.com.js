@@ -183,6 +183,7 @@ var pages = {
 					page.evaluate(function (choice) {
 						document.querySelector('form').querySelector('li:nth-of-type(' + choice + ')').querySelector('input').click();
 						document.querySelector('button#sendSecurityCode').click();
+						return true;
 					}, function () {
 						log('Sending security code to: ' + methods[result.choice - 1]);
 
@@ -201,13 +202,13 @@ var pages = {
 
 								page.evaluate(function () {
 									document.querySelector('input#enterSecurityCode').focus();
+									return true;
 								}, function () {
 									page.sendEvent('keypress', result.code);
 
 									page.evaluate(function () {
-										window.setTimeout(function () {
-											document.querySelector('button#continueButton').click();
-										}, 100);
+										document.querySelector('button#continueButton').click();
+										return true;
 									}, function () {
 
 										waitFor(page, function () {
