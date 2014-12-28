@@ -280,7 +280,9 @@ var pages = {
 		startDate = startDate.toISOString().slice(0, 10);
 		var endDate = new Date().toISOString().slice(0, 10);
 
-		page.evaluate(function (account, dates) {
+		var downloadAddress = 'https://securebanking.ally.com/IDPProxy/executor/accounts/' + account.id + '/transactions.qfx?patron-id=olbWeb&fromDate=' + startDate + '&toDate=' + endDate + '&status=Posted';
+		log('Downloading: ' + downloadAddress);
+		page.evaluate(function (downloadAddress) {
 			// downloads have to be in the context of the web page
 			function downloadReport(address, name) {
 				var result = {};
@@ -303,8 +305,6 @@ var pages = {
 			}
 
 			var result = [];
-			var downloadAddress = 'https://securebanking.ally.com/IDPProxy/executor/accounts/' + account.id + '/transactions.qfx?patron-id=olbWeb&fromDate=' + dates.start + '&toDate=' + dates.end + '&status=Posted';
-			log('Downloading: ' + downloadAddress);
 			result.push(downloadReport(downloadAddress, 'transactions.qfx'));
 			return result;
 		}, function (results) {
@@ -326,7 +326,7 @@ var pages = {
 				callback(response);
 			});
 
-		}, account, {start: startDate, end: endDate});
+		}, downloadAddress);
 	}
 };
 
