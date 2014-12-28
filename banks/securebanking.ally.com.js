@@ -137,6 +137,7 @@ var pages = {
 								return document.title;
 							}, function (title) {
 								if (title.indexOf('Verify Identity') !== -1) {
+									log('Need to verify identity.');
 									pages.verifyAccount(page, callback);
 								} else {
 									callback(error);
