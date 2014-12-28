@@ -25,6 +25,7 @@
   "dependencies": {
     "chalk": "^0.5.1",
     "phantom": "^0.7.1",
+    "prompt": "^0.2.14",
     "prosperity-ofx": "git://github.com/beaudesigns/prosperity-ofx",
     "request": "^2.51.0"
   }

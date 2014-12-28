@@ -1,7 +1,8 @@
 var chalk = require('chalk'),
 	ofx = require('prosperity-ofx'),
 	phantom = require('phantom'),
-	transit = require('../lib/transit.js');
+	transit = require('../lib/transit.js'),
+	prompt = require('prompt');
 
 // Default settings object
 var settings = {
@@ -131,10 +132,74 @@ var pages = {
 						waitFor(page, function () {
 							return (document.title.indexOf('Login') === -1);
 						}, function (error) {
-							callback(error);
+
+							page.evaluate(function () {
+								return document.title;
+							}, function (title) {
+								if (title.indexOf() !== -1) {
+									pages.verifyAccount(page, callback);
+								} else {
+									callback(error);
+								}
+							});
 						})
 					});
 				});
+			});
+		});
+	},
+
+	verifyAccount: function (page, callback) {
+		waitFor(page, function () {
+			return (document.title.indexOf('Verify Identity') !== -1);
+		}, function () {
+			getTitle(page);
+
+			// Get the methods to send the code.
+			page.evaluate(function () {
+				var methods = [];
+				var methodElements = document.querySelector('form').querySelectorAll('li');
+				for (var i = 0; i < methodElements.length; ++i) {
+					methods.push(methodElements[i].innerText);
+				}
+				return methods;
+			}, function (methods) {
+				// PROMPT to choose a method.
+				var description = 'Choose your method by typing the number';
+				for (var i = 0; i < methods.length; ++i) {
+					description += '\n  ' + (i + 1) + ') ' + methods[i];
+				}
+				prompt.start();
+				prompt.get({
+					properties: {
+						choice: {
+							type: 'number',
+							description: description
+						}
+					}
+				}, function (error, result) {
+
+					// Choice was made. Click the button.
+					page.evaluate(function (choice) {
+						document.querySelector('form').querySelector('li:nth-of-type(' + choice + ')').querySelector('input').click();
+						document.querySelector('button#sendSecurityCode').click();
+					}, function () {
+						log('Sending security code to: ' + methods[result.choice - 1]);
+
+						// TODO: This is debug code.
+						setTimeout(function () {
+							page.render('ally.png');
+							var fs = require('fs');
+							page.getContent(function (content) {
+								fs.writeFileSync('ally.html', content);
+							})
+						}, 5000);
+
+
+					}, result.choice)
+				});
+
+				// When a method is chosen, click it and then click the button.
 			});
 		});
 	},
