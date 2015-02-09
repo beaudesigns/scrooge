@@ -247,28 +247,34 @@ var pages = {
 		}, function () {
 			getTitle(page);
 
+			page.render('ally.png');
 			page.evaluate(function () {
-				var accounts = [];
+				var accounts = [], accountElements = [], i;
 
-				var accountElements = document.querySelector('#accounts-block').querySelectorAll('article');
+				var accountRows = document.querySelector('#all-accounts-block').querySelectorAll('tr');
+				if (accountRows.length) {
+					for (i = 0; i < accountRows.length; ++i) {
+						if (accountRows[i].querySelector('.summary-account-name-and-number')) {
+							accountElements.push(accountRows[i]);
+						}
+					}
+				}
 				if (accountElements.length) {
-					for (var i = 0; i < accountElements.length; ++i) {
+					for (i = 0; i < accountElements.length; ++i) {
 						var account = {};
-						account.id = parseInt(accountElements[i].getAttribute('aria-labelledby').replace('account-name-', ''), 10);
-						account.name = accountElements[i].querySelector('.large-nickname').innerText;
-						account.number = accountElements[i].querySelector('div').querySelector('li:last-of-type').innerText;
+						account.id = parseInt(accountElements[i].querySelector('.summary-account-name-and-number a').getAttribute('aria-labelledby').replace('account-name-', ''), 10);
+						account.name = accountElements[i].querySelector('.summary-account-name-and-number a').innerText.trim();
+						account.number = accountElements[i].querySelector('.summary-account-name-and-number > span').innerText;
 
-						var balance = accountElements[i].querySelector('.balance-amount').innerText.replace(/[^0-9]/ig, '');
-						var dollars = balance.slice(0, -2);
-						var cents = balance.slice(-2);
-						account.balance = parseFloat(dollars + '.' + cents);
+						var balance = accountElements[i].querySelector('.summary-total-available-account span').innerText.replace(/[^0-9.]/ig, '');
+						account.balance = parseFloat(balance);
 
 						accounts.push(account);
 					}
 				}
 				return accounts;
-			}, function (accounts) {
-				callback(accounts);
+			}, function (builtAccountList) {
+				callback(builtAccountList);
 			});
 		});
 	},
