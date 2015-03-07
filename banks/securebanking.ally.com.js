@@ -246,8 +246,6 @@ var pages = {
 			return (document.title.indexOf('Summary') !== -1);
 		}, function () {
 			getTitle(page);
-
-			page.render('ally.png');
 			page.evaluate(function () {
 				var accounts = [], accountElements = [], i;
 

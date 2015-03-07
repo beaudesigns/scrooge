@@ -59,6 +59,9 @@ function importTransactions(transactions, callback) {
 					// Import into Budgety.
 					log(chalk.cyan('import'), geoTransaction.amount, '\t', geoTransaction.payee);
 					request.post('http://budgety.net/api/transactions/import?key=' + encodeURIComponent(settings.apiKey), {form: {transaction: geoTransaction}}, function (error, response, body) {
+						if (error || !body) {
+							log(chalk.cyan('import'), chalk.red('error'), error, body);
+						}
 						importTransactions(transactions, callback);
 					});
 				});
