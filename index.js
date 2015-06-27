@@ -1,5 +1,8 @@
-var crypto = require('crypto'),
-	chalk = require('chalk');
+var fs = require('fs'),
+	crypto = require('crypto'),
+	chalk = require('chalk'),
+	ofx = require('prosperity-ofx'),
+	transit = require('./lib/transit.js');
 
 if (process.argv.length < 6) {
 	throw new Error('Missing parameters.');
@@ -32,23 +35,43 @@ var bankObject = JSON.parse(decrypt(process.argv[4], encryptionKey, encryptionIV
  */
 var exportObject = JSON.parse(decrypt(process.argv[5], encryptionKey, encryptionIV));
 
-console.log(chalk.red('Scrooge is beginning his efforts.'));
-var bank = require('./banks/' + bankObject.bank + '.js');
-bank.run({
-	username: bankObject.username,
-	password: bankObject.password,
-	transactionsFor: bankObject.transactionsFor,
-	days: bankObject.days
-}, function (error, bankDetail) {
-	if (error) {
-		throw error;
-	} else {
+/**
+ * @param {String} importOFXFile File path to OFX file to import. Skipping bank connection.
+ */
+var importOFXFile = process.argv[6] || null;
+
+if (importOFXFile) {
+	console.log(chalk.red('Scrooge is importing from a file.'));
+
+	ofx.parse(fs.readFileSync(importOFXFile), function (error, response) {
+		var transactions = transit.findObjectKey('STMTTRN', response);
 		var exporter = require('./exports/' + exportObject.name + '.js');
-		exporter.run({apiKey: exportObject.key, accounts: bankDetail.accounts}, function () {
+		exporter.run({
+			apiKey: exportObject.key,
+			accounts: [{id: importOFXFile, transactions: transactions}]
+		}, function () {
 			console.log(chalk.red('Scrooge has completed his work.'));
 		});
-	}
-});
+	});
+} else {
+	console.log(chalk.red('Scrooge is beginning his efforts.'));
+	var bank = require('./banks/' + bankObject.bank + '.js');
+	bank.run({
+		username: bankObject.username,
+		password: bankObject.password,
+		transactionsFor: bankObject.transactionsFor,
+		days: bankObject.days
+	}, function (error, bankDetail) {
+		if (error) {
+			throw error;
+		} else {
+			var exporter = require('./exports/' + exportObject.name + '.js');
+			exporter.run({apiKey: exportObject.key, accounts: bankDetail.accounts}, function () {
+				console.log(chalk.red('Scrooge has completed his work.'));
+			});
+		}
+	});
+}
 
 // Encrypt/Decrypt
 function encrypt(text, key, iv) {
